@@ -34,7 +34,7 @@ class StopWatch(object):
         return self.stop - self.start
 
     def __str__(self):
-        return '%sms ' % self.duration
+        return '%ss ' % self.duration
 
 class Sensor(object):
     
@@ -92,7 +92,7 @@ class Sensor(object):
 
     def __str__(self):
         # TODO add median
-        return '[measurements: %s, min: %s, max: %s, average: %s]' % (len(self.measurements), self.min, self.max, self.average)
+        return '[measurements: %s, min: %ss, max: %ss, average: %ss]' % (len(self.measurements), self.min, self.max, self.average)
 
 class Profiling(object):
 
@@ -106,7 +106,7 @@ class Profiling(object):
         self.overallStopWatch.stop()
 
     def __str__(self):
-        return 'lsSensor: %s' % self.lsSensor
+        return 'lsSensor: %s\nOverall time: %s\n' % (self.lsSensor, self.overallStopWatch)
 
 def profileLs(profiling, path):
     w = profiling.lsSensor.startMeasurement()
@@ -138,23 +138,29 @@ def main():
 
     profiling = Profiling()
 
-    def visit(arg, dirname, names):
-        profilePath(profiling, dirname)
+    retCode = 0
+    try:
+        def visit(arg, dirname, names):
+            profilePath(profiling, dirname)
 
-        for n in names:
-            p = os.path.join(dirname, n)
+            for n in names:
+                p = os.path.join(dirname, n)
 
-            profilePath(profiling, p)
+                profilePath(profiling, p)
 
-        # TODO profile names
+            # TODO profile names
 
-    os.path.walk(testRootPath, visit, None)
+        os.path.walk(testRootPath, visit, None)
+    except KeyboardInterrupt:
+        print 'User interrupted test'
 
-    profilePath(profiling, testRootPath)
+        retCode = 1
+
     profiling.stop()
 
     print profiling
-    print 'Overall time: %s' % profiling.overallStopWatch
+
+    return retCode
 
 if __name__ == '__main__':
     import sys
