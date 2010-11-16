@@ -23,15 +23,22 @@ import time
 
 class StopWatch(object):
 
+    def __init__(self):
+        self.startTime = None
+        self.stopTime = None
+
     def start(self):
-        self.start = time.time()
+        self.startTime = time.time()
 
     def stop(self):
-        self.stop = time.time()
+        self.stopTime = time.time()
 
     @property
     def duration(self):
-        return self.stop - self.start
+        if((self.startTime == None) or (self.stopTime == None)):
+            return None
+
+        return self.stopTime - self.startTime
 
     def __str__(self):
         return '%ss ' % self.duration
@@ -52,27 +59,31 @@ class Sensor(object):
 
     @property
     def min(self):
-        if(len(self.measurements) == 0):
-            return None
-
-        v = self.measurements[0].duration
+        v = None
         
-        for m in self.measurements[1:]:
-            if(m.duration < v):
-                v = m.duration
+        for m in self.measurements:
+            d = m.duration
+
+            if(d == None):
+                continue
+
+            if((v == None) or (d < v)):
+                v = d
 
         return v
 
     @property
     def max(self):
-        if(len(self.measurements) == 0):
-            return None
-
-        v = self.measurements[0].duration
+        v = None
         
-        for m in self.measurements[1:]:
-            if(m.duration > v):
-                v = m.duration
+        for m in self.measurements:
+            d = m.duration
+
+            if(d == None):
+                continue
+
+            if((v == None) or (d > v)):
+                v = d
 
         return v
 
@@ -81,17 +92,25 @@ class Sensor(object):
         measLen = len(self.measurements)
 
         if(measLen == 0):
-            return 0
+            return None
 
-        return self.overallSum / measLen
+        os = self.overallSum
+        if(os == None):
+            return None
+
+        # TODO divide through the number of not None durations
+        return os / measLen
 
     @property
     def median(self):
-        ms = [m.duration for m in self.measurements]
+        ms = [m.duration for m in self.measurements if m.duration != None]
 
         ms.sort()
 
         msl = len(ms)
+        if(msl == 0):
+            return None
+
         if(msl % 2 == 0):
             return (ms[msl / 2] + ms[msl / 2 + 1]) / 2.0
         else:
@@ -102,7 +121,11 @@ class Sensor(object):
         sum = 0.0
 
         for m in self.measurements:
-            sum += m.duration
+            d = m.duration
+            if(d == None):
+                continue
+
+            sum += d
 
         return sum
 
