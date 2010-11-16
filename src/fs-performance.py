@@ -29,8 +29,12 @@ class StopWatch(object):
     def stop(self):
         self.stop = time.time()
 
+    @property
+    def duration(self):
+        return self.stop - self.start
+
     def __str__(self):
-        return '%sms ' % (self.stop - self.start)
+        return '%sms ' % self.duration
 
 class Sensor(object):
     
@@ -45,6 +49,49 @@ class Sensor(object):
         m.start()
 
         return m
+
+    @property
+    def min(self):
+        if(len(self.measurements) == 0):
+            return None
+
+        v = self.measurements[0].duration
+        
+        for m in self.measurements[1:]:
+            if(m.duration < v):
+                v = m.duration
+
+        return v
+
+    @property
+    def max(self):
+        if(len(self.measurements) == 0):
+            return None
+
+        v = self.measurements[0].duration
+        
+        for m in self.measurements[1:]:
+            if(m.duration > v):
+                v = m.duration
+
+        return v
+
+    @property
+    def average(self):
+        measLen = len(self.measurements)
+
+        if(measLen == 0):
+            return 0
+
+        sum = 0.0
+        
+        for m in self.measurements:
+            sum += m.duration
+
+        return sum / measLen
+
+    def __str__(self):
+        return '[min: %s, max: %s, average: %s]' % (self.min, self.max, self.average)
 
 class Profiling(object):
 
@@ -63,7 +110,7 @@ class Profiling(object):
 def profileLs(profiling, path):
     w = profiling.lsSensor.startMeasurement()
 
-    # TODO do ls
+    os.listdir(path)
 
     w.stop()
 
