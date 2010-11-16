@@ -17,18 +17,60 @@
 # along with fs performance.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
 import optparse
 import time
 
 class StopWatch(object):
 
-    def __init__(self):
+    def start(self):
         self.start = time.time()
 
     def stop(self):
         self.stop = time.time()
 
-def profilePath(path):
+    def __str__(self):
+        return '%sms ' % (self.stop - self.start)
+
+class Sensor(object):
+    
+    def __init__(self):
+        self.measurements = []
+
+    def startMeasurement(self):
+        m = StopWatch()
+
+        self.measurements.append(m)
+
+        m.start()
+
+        return m
+
+class Profiling(object):
+
+    def __init__(self):
+        self.lsSensor = Sensor()
+
+        self.overallStopWatch = StopWatch()
+        self.overallStopWatch.start()
+
+    def stop(self):
+        self.overallStopWatch.stop()
+
+    def __str__(self):
+        return 'lsSensor: %s' % self.lsSensor
+
+def profileLs(profiling, path):
+    w = profiling.lsSensor.startMeasurement()
+
+    # TODO do ls
+
+    w.stop()
+
+def profilePath(profiling, path):
+    if(os.path.isdir(path)):
+        profileLs(profiling, path)
+
     pass
 
 def main():
@@ -44,11 +86,12 @@ def main():
 
     testRootPath = args[0]
 
-    overallStopWatch = StopWatch()
-    profilePath(testRootPath)
-    overallStopWatch.stop()
+    profiling = Profiling()
+    profilePath(profiling, testRootPath)
+    profiling.stop()
 
-    print "Overall time: %s" % overallStopWatch
+    print profiling
+    print 'Overall time: %s' % profiling.overallStopWatch
 
 if __name__ == '__main__':
     import sys
