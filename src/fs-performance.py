@@ -90,9 +90,23 @@ class Sensor(object):
 
         return sum / measLen
 
+    @property
+    def median(self):
+        ms = [m.duration for m in self.measurements]
+
+        ms.sort()
+
+        print ms
+
+        msl = len(ms)
+        if(msl % 2 == 0):
+            return (ms[msl / 2] + ms[msl / 2 + 1]) / 2.0
+        else:
+            return ms[msl / 2]
+
     def __str__(self):
         # TODO add median
-        return '[measurements: %s, min: %ss, max: %ss, average: %ss]' % (len(self.measurements), self.min, self.max, self.average)
+        return '[measurements: %s, min: %ss, max: %ss, average: %ss, median: %ss]' % (len(self.measurements), self.min, self.max, self.average, self.median)
 
 class Profiling(object):
 
