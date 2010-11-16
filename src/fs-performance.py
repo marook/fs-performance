@@ -91,7 +91,8 @@ class Sensor(object):
         return sum / measLen
 
     def __str__(self):
-        return '[min: %s, max: %s, average: %s]' % (self.min, self.max, self.average)
+        # TODO add median
+        return '[measurements: %s, min: %s, max: %s, average: %s]' % (len(self.measurements), self.min, self.max, self.average)
 
 class Profiling(object):
 
@@ -118,6 +119,8 @@ def profilePath(profiling, path):
     if(os.path.isdir(path)):
         profileLs(profiling, path)
 
+    
+
     pass
 
 def main():
@@ -134,6 +137,19 @@ def main():
     testRootPath = args[0]
 
     profiling = Profiling()
+
+    def visit(arg, dirname, names):
+        profilePath(profiling, dirname)
+
+        for n in names:
+            p = os.path.join(dirname, n)
+
+            profilePath(profiling, p)
+
+        # TODO profile names
+
+    os.path.walk(testRootPath, visit, None)
+
     profilePath(profiling, testRootPath)
     profiling.stop()
 
