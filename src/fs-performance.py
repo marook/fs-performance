@@ -158,9 +158,7 @@ def profilePath(profiling, path):
     if(os.path.isdir(path)):
         profileLs(profiling, path)
 
-    
-
-    pass
+    # TODO add further profilings
 
 def main():
     usage = 'usage: %prog [options] target [commands]'
