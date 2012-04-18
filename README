@@ -1,0 +1,37 @@
+fs-performance
+
+1) Introduction
+2) Usage
+3) Output
+
+
+---------------------------------------------------------------------------
+Introduction
+
+fs-performance is a very alpha tool to measure file system performance. As we
+are ultra alpha we only support measuring directory list operations.
+
+
+---------------------------------------------------------------------------
+Usage
+
+$ python src/fs-performance target-dir
+
+
+---------------------------------------------------------------------------
+Output
+
+Here's some example output:
+
+lsSensor: [measurements: 2606, sum: 191.235429525, min: 0.000104904174805s, max: 0.841929912567s, average: 0.0733827434863s, median: 0.000216960906982s]
+Overall time: 206.110818863s 
+
+Right now there is only one sensor which measures list directory content
+operations. The values above mean the following:
+
+* measurements - there have been 2606 directory listings
+* sum - this is the summed up duration in seconds of all lsSensor invocations
+* min - this was the duration in seconds of the fastest measured invocation
+* max - this was the duration in seconds of the slowest measured invocation
+* average - this is the average invocation duration in seconds
+* median - this is the median invocation duration in seconds
